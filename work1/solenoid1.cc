@@ -2,13 +2,13 @@
 #include <iostream>
 //#include "solenoid1.cc" //should not do this --> will be nesting problem
 #include "DetectorConstruction.hh"
-//#include "PrimaryGeneratorAction.hh"
+#include "PrimaryGeneratorAction.hh"
 //#include "PhysicsList.hh"  // these are essential, because the run manager needs
-			   // 1. the detector geometry
-			   // 2. particles and physics processes
-			   // 3. how primary particles will be produced
-			   // 4. Any additional 
-			   // so here "DetectorConstruction", "PhysicsList", "ActionInitialization are essential
+               // 1. the detector geometry
+               // 2. particles and physics processes
+               // 3. how primary particles will be produced
+               // 4. Any additional
+               // so here "DetectorConstruction", "PhysicsList", "ActionInitialization are essential
 
 #include "ActionInitialization.hh" // essential
 
@@ -47,12 +47,27 @@ int main(int argc, char** argv) //for vis manager the two parameters are essenta
     
     G4UIExecutive *ui = new G4UIExecutive(argc,argv);
     
-    G4VisManager *visManager = new G4VisExecutive();
+    //G4VisManager *visManager = new G4VisExecutive(argc, argv);
+    // - a graphics system of choice, eg. "OGL"
+    // - and a verbosity argument - see /vis/verbose guidance.
+    auto visManager = new G4VisExecutive(argc, argv, "OGL", "Quiet");
+    
+    //auto visManager = new G4VisExecutive("Quiet");
     
     visManager->Initialize();
     
     G4UImanager *UImanager = G4UImanager::GetUIpointer(); //no 'new'
-    ui->SessionStart();
+
+    if (! ui){
+        G4String command = "/control/execute ";
+        G4String fileName = argv[1];
+        UImanager -> ApplyCommand(command+fileName);
+    }
+    else{
+        UImanager->ApplyCommand("controle/execute init_vis.mac");
+        ui ->SessionStart();
+    }
+    
     //set mandatory initialization classes
     // Physics list
     
@@ -98,8 +113,8 @@ int main(int argc, char** argv) //for vis manager the two parameters are essenta
     //int numberOfEvent = 3; // minimum physlist and action --> nothing in here for now
     //runManager ->BeamOn(numberOfEvent);
     
-    //delete runManager;
-    //delete visManager;
+    delete runManager;
+    delete visManager;
     //delete UI;
     return 0;
     
