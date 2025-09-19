@@ -22,7 +22,7 @@
 #include "G4UImanager.hh" // don't know what this does but sounds to be essential
 #include "G4VisExecutive.hh" // don't know what this does but sounds to be essential
 #include "G4VisManager.hh" //after trying everything except vis setting, applying this
-
+#include "G4SteppingVerbose.hh"
 
 // I am not sure namespace should not be used here or not/
 // namespace sol{ // namespace --> lower case //class --> upper case
@@ -34,6 +34,19 @@ int main(int argc, char** argv) //for vis manager the two parameters are essenta
     
     //auto runManager = G4RunManagerFactory::CreateRunManager();
     //G4RunManager *runManager = new G4RunManager();
+
+    // Detect interactive mode (if no arguments) and define UI session
+    //
+    G4UIExecutive* ui = nullptr;
+    if (argc == 1) {
+    ui = new G4UIExecutive(argc, argv);
+    }
+
+
+      // use G4SteppingVerboseWithUnits
+    G4int precision = 4;
+    G4SteppingVerbose::UseBestUnit(precision);
+
     auto runManager = G4RunManagerFactory::CreateRunManager(G4RunManagerType::Serial);
     G4VModularPhysicsList* physicsList = new QBBC;
     physicsList->SetVerboseLevel(1);
@@ -45,12 +58,12 @@ int main(int argc, char** argv) //for vis manager the two parameters are essenta
     //initializa G4 kernel
     runManager -> Initialize();
     
-    G4UIExecutive *ui = new G4UIExecutive(argc,argv);
+    // G4UIExecutive *ui = new G4UIExecutive(argc,argv);
     
     //G4VisManager *visManager = new G4VisExecutive(argc, argv);
     // - a graphics system of choice, eg. "OGL"
     // - and a verbosity argument - see /vis/verbose guidance.
-    auto visManager = new G4VisExecutive(argc, argv, "OGL", "Quiet");
+    auto visManager = new G4VisExecutive(argc, argv);
     
     //auto visManager = new G4VisExecutive("Quiet");
     
@@ -58,16 +71,20 @@ int main(int argc, char** argv) //for vis manager the two parameters are essenta
     
     G4UImanager *UImanager = G4UImanager::GetUIpointer(); //no 'new'
 
-    if (! ui){
-        G4String command = "/control/execute ";
-        G4String fileName = argv[1];
-        UImanager -> ApplyCommand(command+fileName);
-    }
-    else{
-        UImanager->ApplyCommand("controle/execute init_vis.mac");
-        ui ->SessionStart();
-    }
-    
+ // Process macro or start UI session
+  //
+  if (!ui) {
+    // batch mode
+    G4String command = "/control/execute ";
+    G4String fileName = argv[1];
+    UImanager->ApplyCommand(command + fileName);
+  }
+  else {
+    // interactive mode
+    UImanager->ApplyCommand("/control/execute init_vis_sol.mac");
+    ui->SessionStart();
+    delete ui;
+  }
     //set mandatory initialization classes
     // Physics list
     
@@ -114,7 +131,7 @@ int main(int argc, char** argv) //for vis manager the two parameters are essenta
     //runManager ->BeamOn(numberOfEvent);
     
     delete runManager;
-    delete visManager;
+    // /delete visManager;
     //delete UI;
     return 0;
     

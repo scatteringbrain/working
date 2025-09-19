@@ -22,10 +22,10 @@ target_link_libraries(solenoid1 ${Geant4_LIBRARIES})# problem is here ..
 set(SOLENOID1_SCRIPTS
 #solenoid.in
 #solenoid.out
-#init_vis.mac
+init_vis_sol.mac
 #run1.mac
 #run2.mac
-#vis.mac
+vis_sol.mac
 )
 foreach(_script ${SOLENOID1_SCRIPTS})
 configure_file(

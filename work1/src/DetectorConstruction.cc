@@ -38,7 +38,7 @@ G4NistManager* nist = G4NistManager::Instance();
 
 //static const double pi = 3.14159265358979323846;
 
-G4double rmin = 20 * cm, rmax = 30* cm, rot = 0*deg, sphi =0*deg, dphi=360*deg;
+G4double rmin = 1 * cm, rmax = 3000* cm, rot = 0*deg, sphi =0*deg, dphi=360*deg;
 G4Material* to_mat = nist->FindOrBuildMaterial("G4_WATER");
 
 
